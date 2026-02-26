@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   
   // Recuperiamo il Token dalla cassaforte di Vercel
   const TOKEN = process.env.AIRTABLE_TOKEN;
-  const BASE_ID = "app2OOG7vD7xM87fW"; // Il tuo ID Base
+  const BASE_ID = "app2OOGt6jSMm5JAc"; // Il tuo ID Base
   const TABLE_NAME = "Messe"; 
 
   const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}?filterByFormula=${encodeURIComponent(filterByFormula)}&sort[0][field]=${sort0Field}&sort[0][direction]=${sort0Dir}&sort[1][field]=${sort1Field}&sort[1][direction]=${sort1Dir}`;
