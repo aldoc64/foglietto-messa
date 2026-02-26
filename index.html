@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="Foglietto Messa">
+	<meta name="theme-color" content="#5d7a8c">
+	
+	<link rel="manifest" href="manifest.json">
+	<link rel="apple-touch-icon" href="San_Giuseppe_2_32x32.png">
+	<link rel="icon" href="San_Giuseppe_2_32x32.png">
+
+    <title>Foglietto parrocchiale della Messa</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f7f9; color: #333; }
+        .container { max-width: 600px; margin: auto; padding-bottom: 80px; }
+		
+		h1 {
+			text-align: center;
+			color: #2c3e50;
+			font-size: 1.8rem; /* Una dimensione leggibile ma elegante */
+			padding: 20px 0;   /* Spazio sopra e sotto il titolo */
+			margin: 0;
+		}
+		
+		h1::after {
+			content: '';
+			display: block;
+			width: 50px;       /* Lunghezza della linea */
+			height: 3px;       /* Spessore */
+			background: #5d7a8c; /* Lo stesso azzurrino dei titoli */
+			margin: 10px auto; /* Centra la linea sotto il testo */
+			border-radius: 2px;
+		}
+        
+        /* Menu di selezione */
+        .selector-box { margin-bottom: 20px; text-align: center; }
+        select { padding: 10px; border-radius: 8px; border: 1px solid #ccc; width: 100%; max-width: 300px; font-size: 1rem; }
+
+        .card { 
+            background: white; padding: 25px; border-radius: 15px; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            border-top: 10px solid #ccc; /* Colore dinamico */
+            display: none; /* Nascondiamo tutte le messe all'inizio */
+        }
+
+		/* Titoli delle sezioni in azzurrino/grigio */
+		.sezione-titolo { 
+			font-weight: bold; 
+			color: #5d7a8c; /* Azzurro grigiastro */
+			margin-top: 30px; /* Più spazio prima del titolo */
+			margin-bottom: 20px; /* Spazio dopo il titolo */
+			border-bottom: 1px solid #d1d9e0; 
+			font-size: 1.2rem;
+			letter-spacing: 0.5px;
+		}
+		
+		/* Riga vuota prima di ogni testo (già inclusa nel margin-top sopra) */
+		.testo-liturgico { 
+			font-size: var(--zoom-level, 1.1rem); 
+			white-space: pre-wrap; 
+			margin-bottom: 30px; 
+			padding-left: 5px;
+		}
+
+        .controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; }
+        .btn-zoom { border: none; background: #2c3e50; color: white; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>⛪ Messale Digitale</h1>
+
+        <div class="selector-box">
+            <label for="messaSelect">Seleziona la celebrazione:</label><br><br>
+            <select id="messaSelect" onchange="mostraMessaSelezionata()">
+                <option value="">Caricamento...</option>
+            </select>
+        </div>
+
+        <div id="contenitore"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn-zoom" onclick="changeZoom(-0.1)">A-</button>
+        <button class="btn-zoom" onclick="changeZoom(0.1)">A+</button>
+    </div>
+
+    <script>
+		const TABLE_NAME = "Messe";
+		let currentZoom = 1.1;
+
+		async function caricaDati() {
+			const contenitore = document.getElementById('contenitore');
+			contenitore.innerHTML = "<p>Caricamento in corso...</p>";
+        
+			const oggi = new Date().toISOString().split('T')[0];
+			const filtro = `IS_SAME({Data}, '${oggi}', 'day')`;
+        
+			// Puntiamo alla tua API su Vercel
+			const url = `/api/get-messe?filterByFormula=${encodeURIComponent(filtro)}&sort0Field=Data&sort0Dir=asc&sort1Field=Ordine&sort1Dir=asc`;
+        
+			try {
+				const risposta = await fetch(url);
+				const dati = await risposta.json();
+				const records = dati.records;
+
+				if (!records || records.length === 0) {
+					contenitore.innerHTML = "<p>Nessuna messa programmata per oggi.</p>";
+					// Puliamo anche il menu se non ci sono messe
+					document.getElementById('messaSelect').innerHTML = '<option value="">-- Nessuna Messa --</option>';
+					return;
+				}
+
+				// CHIAMATA FONDAMENTALE: Passiamo i dati alla tua funzione che crea il menu e le card
+				popolaMenuEMesse(records);
+
+			} catch (errore) {
+				console.error("Errore:", errore);
+				contenitore.innerHTML = "<p>Errore di connessione. Riprova.</p>";
+			}
+		}
+
+		function popolaMenuEMesse(records) {
+			const select = document.getElementById('messaSelect');
+			const contenitore = document.getElementById('contenitore');
+			select.innerHTML = '<option value="">-- Scegli una Messa --</option>';
+			let html = "";
+
+			records.forEach((r, index) => {
+				const f = r.fields;
+				const idUnivoco = "messa-" + index;
+
+				// 1. Aggiungiamo opzione al menu
+				const option = document.createElement('option');
+				option.value = idUnivoco;
+				option.textContent = `${f['Titolo'] || 'Messa'}`;
+				select.appendChild(option);
+
+				// 2. Creiamo la "card" con il tuo stile originale
+				const coloreCSS = traduciColore(f['Colore']);
+            
+				html += `
+					<div id="${idUnivoco}" class="card" style="border-top: 8px solid ${coloreCSS}; display: ${records.length === 1 ? 'block' : 'none'};">
+						<h2 style="color:${coloreCSS}; margin-bottom:5px;">${f['Titolo'] || 'Messa'}</h2>
+						<p style="color:#888; margin-top:0;">📅 ${f['Giorno della Settimana'] || ''} ${f['Data'] || ''}</p>
+                    
+						<div class="sezione-titolo">ANTIFONA</div>
+						<div class="testo-liturgico">${f['Antifona'] || '<i>Non inserita</i>'}</div>
+						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                    
+						<div class="sezione-titolo">COLLETTA</div>
+						<div class="testo-liturgico">${f['Colletta'] || '<i>Non inserita</i>'}</div>
+						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+						<div class="sezione-titolo">PRIMA LETTURA</div>
+						<div class="testo-liturgico">${f['Prima Lettura'] || '<i>Non inserita</i>'}</div>
+						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+						<div class="sezione-titolo">SALMO RESPONSORIALE</div>
+						<div class="testo-liturgico">${f['Salmo Responsoriale'] || '<i>Non inserito</i>'}</div>
+						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                    
+						${f['Seconda Lettura'] ? `
+							<div class="sezione-titolo">SECONDA LETTURA</div>
+							<div class="testo-liturgico">${f['Seconda Lettura']}</div>
+                        <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+						` : ''}
+                    
+						<div class="sezione-titolo">ACCLAMAZIONE AL VANGELO</div>
+						<div class="testo-liturgico">${f['Acclamazione al Vangelo'] || '<i>Non inserita</i>'}</div>
+						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+
+						<div class="sezione-titolo">VANGELO</div>
+						<div class="testo-liturgico">${f['Vangelo'] || '<i>Non inserito</i>'}</div>
+						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                    
+						<div class="sezione-titolo">SULLE OFFERTE</div>
+						<div class="testo-liturgico">${f['Sulle Offerte'] || '<i>Non inserita</i>'}</div>
+						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                    
+						<div class="sezione-titolo">ANTIFONA ALLA COMUNIONE</div>
+						<div class="testo-liturgico">${f['Antifona alla Comunione'] || '<i>Non inserita</i>'}</div>
+						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                    
+						<div class="sezione-titolo">DOPO LA COMUNIONE</div>
+						<div class="testo-liturgico">${f['Dopo la Comunione'] || '<i>Non inserita</i>'}</div>
+					</div>
+				`;
+			});
+			contenitore.innerHTML = html;
+        
+			// Se c'è solo una messa, la selezioniamo automaticamente nel menu
+			if(records.length === 1) select.value = "messa-0";
+		}
+
+		function mostraMessaSelezionata() {
+			const selectedId = document.getElementById('messaSelect').value;
+			document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
+			if(selectedId) {
+				document.getElementById(selectedId).style.display = 'block';
+			}
+		}
+
+		function traduciColore(colore) {
+			const colori = {
+				'Verde': '#2e7d32',
+				'Rosso': '#c62828',
+				'Viola': '#4a148c',
+				'Bianco': '#aaaaaa', // Grigio scuro per leggibilità su fondo chiaro
+				'Oro': '#d4af37'
+			};
+			return colori[colore] || '#5d7a8c';
+		}
+
+		function changeZoom(delta) {
+			currentZoom += delta;
+			document.documentElement.style.setProperty('--zoom-level', currentZoom + 'rem');
+		}
+
+		// Avvio
+		caricaDati();
+	</script>
+</body>
+</html>
