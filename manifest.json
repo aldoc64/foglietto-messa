@@ -1,5 +1,5 @@
 {
-  "short_name": "Messa",
+  "short_name": "Foglietto Messa",
   "name": "Foglietto parrocchiale della Messa",
   "icons": [
     {
@@ -17,4 +17,5 @@
   "display": "standalone",
   "theme_color": "#5d7a8c",
   "background_color": "#f4f7f9"
+
 }
