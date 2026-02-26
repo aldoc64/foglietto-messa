@@ -92,7 +92,6 @@
     </div>
 
     <script>
-        const TOKEN = "patc2ETDhZXlsGbUs.d9b3eb78bd24e5593a301026b66d00d97f561c8d89d59bec4b6f4029f8738675";
         const BASE_ID = "app2OOGt6jSMm5JAc";
         const TABLE_NAME = "Messe";
         let currentZoom = 1.1;
@@ -107,12 +106,10 @@
 			
 			// Ordiniamo prima per Data e poi per la colonna Ora (o Ordine)
 			// Se usi la colonna "Ordine", cambia 'Ora' con 'Ordine' qui sotto
-			const url = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_NAME}?filterByFormula=${encodeURIComponent(filtro)}&sort[0][field]=Data&sort[0][direction]=asc&sort[1][field]=Ordine&sort[1][direction]=asc`;
+			const url = `/api/get-messe?filterByFormula=${filtro}&sort0Field=Data&sort0Dir=asc&sort1Field=Ora&sort1Dir=asc`;
 			
 			try {
-				const risposta = await fetch(url, { 
-					headers: { Authorization: `Bearer ${TOKEN}` } 
-				});
+				const risposta = await fetch(url); // Non serve più l'header con il Token qui!
 				const dati = await risposta.json();
 				
 				if (dati.records.length === 0) {
