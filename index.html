@@ -134,6 +134,8 @@
 
 			records.forEach((r, index) => {
 				const f = r.fields;
+				// TRUCCO: Trasformiamo la data da 2026-02-26 a 26/02/2026
+				const dataItaliana = f['Data'] ? f['Data'].split('-').reverse().join('/') : '';
 				const idUnivoco = "messa-" + index;
 
 				// 1. Aggiungiamo opzione al menu
@@ -148,7 +150,7 @@
 				html += `
 					<div id="${idUnivoco}" class="card" style="border-top: 8px solid ${coloreCSS}; display: ${records.length === 1 ? 'block' : 'none'};">
 						<h2 style="color:${coloreCSS}; margin-bottom:5px;">${f['Titolo'] || 'Messa'}</h2>
-						<p style="color:#888; margin-top:0;">📅 ${f['Giorno della Settimana'] || ''} ${f['Data'] || ''}</p>
+						<p style="color:#888; margin-top:0;">📅 ${f['Giorno della Settimana'] ? f['Giorno della Settimana'] + ' - ' : ''} ${dataItaliana}</p>
                     
 						<div class="sezione-titolo">ANTIFONA</div>
 						<div class="testo-liturgico">${f['Antifona'] || '<i>Non inserita</i>'}</div>
