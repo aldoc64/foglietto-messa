@@ -13,6 +13,13 @@ export default async function handler(req, res) {
       headers: { Authorization: `Bearer ${TOKEN}` }
     });
     const dati = await risposta.json();
+    
+    // CONFIGURAZIONE CACHE:
+    // s-maxage=3600: Vercel tiene i dati "freschi" per 1 ora (3600 secondi).
+    // stale-while-revalidate=600: Se qualcuno entra dopo l'ora, vede subito i dati vecchi 
+    // mentre Vercel scarica quelli nuovi in background (per max 10 minuti).
+    res.setHeader('Cache-Control', 's-maxage=3600, stale-while-revalidate=600');
+    
     res.status(200).json(dati);
   } catch (error) {
     res.status(500).json({ error: "Errore nel recupero dati" });
