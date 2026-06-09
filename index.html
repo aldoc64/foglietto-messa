@@ -148,51 +148,69 @@
 				const coloreCSS = traduciColore(f['Colore']);
             
 				html += `
-					<div id="${idUnivoco}" class="card" style="border-top: 8px solid ${coloreCSS}; display: ${records.length === 1 ? 'block' : 'none'};">
-						<h2 style="color:${coloreCSS}; margin-bottom:5px;">${f['Titolo'] || 'Messa'}</h2>
-						<p style="color:#888; margin-top:0;">📅 ${f['Giorno della Settimana'] ? f['Giorno della Settimana'] + ' - ' : ''} ${dataItaliana}</p>
-                    
-						<div class="sezione-titolo">ANTIFONA</div>
-						<div class="testo-liturgico">${f['Antifona'] || '<i>Non inserita</i>'}</div>
-						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                    
-						<div class="sezione-titolo">COLLETTA</div>
-						<div class="testo-liturgico">${f['Colletta'] || '<i>Non inserita</i>'}</div>
-						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-
-						<div class="sezione-titolo">PRIMA LETTURA</div>
-						<div class="testo-liturgico">${f['Prima Lettura'] || '<i>Non inserita</i>'}</div>
-						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-
-						<div class="sezione-titolo">SALMO RESPONSORIALE</div>
-						<div class="testo-liturgico">${f['Salmo Responsoriale'] || '<i>Non inserito</i>'}</div>
-						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                    
-						${f['Seconda Lettura'] ? `
-							<div class="sezione-titolo">SECONDA LETTURA</div>
-							<div class="testo-liturgico">${f['Seconda Lettura']}</div>
-                        <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-						` : ''}
-                    
-						<div class="sezione-titolo">ACCLAMAZIONE AL VANGELO</div>
-						<div class="testo-liturgico">${f['Acclamazione al Vangelo'] || '<i>Non inserita</i>'}</div>
-						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-
-						<div class="sezione-titolo">VANGELO</div>
-						<div class="testo-liturgico">${f['Vangelo'] || '<i>Non inserito</i>'}</div>
-						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                    
-						<div class="sezione-titolo">SULLE OFFERTE</div>
-						<div class="testo-liturgico">${f['Sulle Offerte'] || '<i>Non inserita</i>'}</div>
-						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                    
-						<div class="sezione-titolo">ANTIFONA ALLA COMUNIONE</div>
-						<div class="testo-liturgico">${f['Antifona alla Comunione'] || '<i>Non inserita</i>'}</div>
-						<hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                    
-						<div class="sezione-titolo">DOPO LA COMUNIONE</div>
-						<div class="testo-liturgico">${f['Dopo la Comunione'] || '<i>Non inserita</i>'}</div>
-					</div>
+				    <div id="${idUnivoco}" class="card" style="border-top: 8px solid ${coloreCSS}; display: ${records.length === 1 ? 'block' : 'none'};">
+				        <h2 style="color:${coloreCSS}; margin-bottom:5px;">${f['Titolo'] || 'Messa'}</h2>
+				        <p style="color:#888; margin-top:0;">📅 ${f['Giorno della Settimana'] ? f['Giorno della Settimana'] + ' - ' : ''} ${dataItaliana}</p>
+				        
+				        ${f['Antifona'] ? `
+				            <div class="sezione-titolo">ANTIFONA</div>
+				            <div class="testo-liturgico">${f['Antifona']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				        
+				        ${f['Colletta'] ? `
+				            <div class="sezione-titolo">COLLETTA</div>
+				            <div class="testo-liturgico">${f['Colletta']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				
+				        ${f['Prima Lettura'] ? `
+				            <div class="sezione-titolo">PRIMA LETTURA</div>
+				            <div class="testo-liturgico">${f['Prima Lettura']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				
+				        ${f['Salmo Responsoriale'] ? `
+				            <div class="sezione-titolo">SALMO RESPONSORIALE</div>
+				            <div class="testo-liturgico">${f['Salmo Responsoriale']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				        
+				        ${f['Seconda Lettura'] ? `
+				            <div class="sezione-titolo">SECONDA LETTURA</div>
+				            <div class="testo-liturgico">${f['Seconda Lettura']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				        
+				        ${f['Acclamazione al Vangelo'] ? `
+				            <div class="sezione-titolo">ACCLAMAZIONE AL VANGELO</div>
+				            <div class="testo-liturgico">${f['Acclamazione al Vangelo']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				
+				        ${f['Vangelo'] ? `
+				            <div class="sezione-titolo">VANGELO</div>
+				            <div class="testo-liturgico">${f['Vangelo']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				        
+				        ${f['Sulle Offerte'] ? `
+				            <div class="sezione-titolo">SULLE OFFERTE</div>
+				            <div class="testo-liturgico">${f['Sulle Offerte']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				        
+				        ${f['Antifona alla Comunione'] ? `
+				            <div class="sezione-titolo">ANTIFONA ALLA COMUNIONE</div>
+				            <div class="testo-liturgico">${f['Antifona alla Comunione']}</div>
+				            <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+				        ` : ''}
+				        
+				        ${f['Dopo la Comunione'] ? `
+				            <div class="sezione-titolo">DOPO LA COMUNIONE</div>
+				            <div class="testo-liturgico">${f['Dopo la Comunione']}</div>
+				        ` : ''}
+				    </div>
 				`;
 			});
 			contenitore.innerHTML = html;
