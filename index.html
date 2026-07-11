@@ -17,7 +17,12 @@
     <title>Foglietto parrocchiale della Messa</title>
     <style>
         body { font-family: sans-serif; padding: 20px; background: #f4f7f9; color: #333; }
-        .container { max-width: 600px; margin: auto; padding-bottom: 80px; }
+        /*.container { max-width: 600px; margin: auto; padding-bottom: 80px; }*/
+		.container {display: flex;
+  					flex-direction: column;
+  					min-height: 100vh; /* Prende tutta l'altezza dello schermo dello smartphone */
+					padding-bottom: 70px; /* Lascia lo spazio di sicurezza per i bottoni A- e A+ */
+    				box-sizing: border-box;}
 		
 		h1 {
 			text-align: center;
@@ -46,6 +51,9 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.05);
             border-top: 10px solid #ccc; /* Colore dinamico */
             display: none; /* Nascondiamo tutte le messe all'inizio */
+			/* Nuove righe */
+			flex: 1; /* Questo "spinge" automaticamente il footer verso il basso */
+  			padding: 15px;
         }
 
 		/* Titoli delle sezioni in azzurrino/grigio */
@@ -69,6 +77,20 @@
 
         .controls { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; gap: 15px; }
         .btn-zoom { border: none; background: #2c3e50; color: white; width: 45px; height: 45px; border-radius: 50%; font-size: 1.2rem; }
+
+		.app-footer {
+ 						text-align: center;
+  						padding: 15px 10px;
+  						background-color: #f9f9f9; /* Opzionale: uno sfondo leggero per staccare dal testo */
+  						border-top: 1px solid #eee; /* Una sottile linea di separazione */
+					}
+
+		.app-footer p {
+  						margin: 0;
+  						font-size: 11px; /* Testo piccolo e discreto */
+  						color: #777;     /* Colore grigio per non distrarre */
+  						font-style: italic;
+						}
     </style>
 </head>
 <body>
@@ -84,6 +106,10 @@
         </div>
 
         <div id="contenitore"></div>
+
+		<footer class="app-footer">
+    		<p>Testi tratti dal sito <a href="https://www.chiesacattolica.it/liturgia-del-giorno/" target="_blank" style="color: #5d7a8c; text-decoration: none; font-weight: bold;">ChiesaCattolica.it</a></p>
+  		</footer>
     </div>
 
     <div class="controls">
@@ -247,5 +273,8 @@
 		// Avvio
 		caricaDati();
 	</script>
+
+
+	
 </body>
 </html>
